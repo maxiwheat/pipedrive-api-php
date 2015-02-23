@@ -35,7 +35,7 @@ class Deals
      * Returns a deal
      *
      * @param  int   $id pipedrive deals id
-     * @return array returns detials of a deal
+     * @return array returns details of a deal
      */
     public function getById($id)
     {
@@ -46,7 +46,7 @@ class Deals
      * Returns a deal / deals
      *
      * @param  string $name pipedrive deals title
-     * @return array  returns detials of a deal
+     * @return array  returns details of a deal
      */
     public function getByName($name, $personId=null, $orgId=null)
     {
@@ -63,14 +63,14 @@ class Deals
     /**
      * Adds a deal
      *
-     * @param  array $data deal detials
-     * @return array returns detials of the deal
+     * @param  array $data deal details
+     * @return array returns details of the deal
      */
     public function add(array $data)
     {
         //if there is no title set throw error as it is a required field
         if (!isset($data['title'])) {
-            throw new PipedriveMissingFieldError('You must include a "title" feild when inserting a deal');
+            throw new PipedriveMissingFieldError('You must include a "title" field when inserting a deal');
         }
 
         return $this->curl->post('deals', $data);
@@ -80,8 +80,8 @@ class Deals
      * Updates a deal
      *
      * @param  int   $dealId pipedrives deal Id
-     * @param  array $data   new detials of deal
-     * @return array returns detials of a deal
+     * @param  array $data   new details of deal
+     * @return array returns details of a deal
      */
     public function update($dealId, array $data = array())
     {
@@ -93,7 +93,7 @@ class Deals
      *
      * @param  int   $dealId  deal id
      * @param  int   $stageId stage id
-     * @return array returns detials of the deal
+     * @return array returns details of the deal
      */
     public function moveStage($dealId, $stageId)
     {

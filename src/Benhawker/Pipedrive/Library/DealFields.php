@@ -36,14 +36,14 @@ class DealFields
     /**
      * Adds a dealField
      *
-     * @param  array $data deal field detials
+     * @param  array $data deal field details
      * @return array returns details of the deal field
      */
     public function add(array $data)
     {
         //if there is no name set throw error as it is a required field
         if (!isset($data['name'])) {
-            throw new PipedriveMissingFieldError('You must include a "name" feild when inserting a dealField');
+            throw new PipedriveMissingFieldError('You must include a "name" field when inserting a dealField');
         }
 
         return $this->curl->post('dealFields', $data);

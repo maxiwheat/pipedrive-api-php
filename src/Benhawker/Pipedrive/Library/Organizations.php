@@ -31,22 +31,71 @@ class Organizations
      * Returns a organization
      *
      * @param  int   $id pipedrive organizations id
-     * @return array returns detials of a organization
+     * @return array returns details of a organization
      */
     public function getById($id)
     {
-        return $this->curl->get('organizations/' . $id);
+        return $this->curl->get('organizations' . $id);
     }
 
     /**
      * Returns an organization (or a list of organizations)
      *
      * @param  string $name pipedrive organizations name
-     * @return array  returns detials of a organization
+     * @return array  returns details of a organization
      */
     public function getByName($name)
     {
         return $this->curl->get('organizations/find', array('term' => $name));
+    }
+    
+    /**
+     * Returns all organizations
+     *
+     * @param  array $data (filter_id, start, limit, sort_by, sort_mode)
+     * @return array returns details of all organizations
+     */
+    public function getAll(array $data = array())
+    {
+        if (isset($data['pagination']) && $data['pagination'] == false) {
+            unset($data['pagination']);
+            return $this->getAllNoPagination($data);
+        }
+        
+        return $this->curl->get('organizations', $data);
+    }
+    
+    /**
+     * Returns all organizations without pagination
+     *
+     * @param  array $data (filter_id, start, limit, sort_by, sort_mode)
+     * @return array returns details of all organizations
+     */
+    private function getAllNoPagination(array $data = array())
+    {
+        $response = $this->curl->get('organizations', array_merge($data, array('start' => 0, 'limit' => 500)));
+        
+        if ($response['success']) {
+            $output = $response;
+        
+            $pagination = $response['additional_data']['pagination'];
+            
+            while ($pagination['more_items_in_collection']) {
+                $response = $this->curl->get('organizations', array_merge($data, array('start' => $pagination['next_start'], 'limit' => 500)));
+                $pagination = $response['additional_data']['pagination'];
+            
+                array_merge($output['data'], $response['data']);
+            }
+        }
+        
+        $output['additional_data']['pagination']['limit'] = count($output['data']);
+        $output['additional_data']['pagination']['more_items_in_collection'] = false;
+        
+        if (isset($output['additional_data']['pagination']['next_start'])) {
+            unset($output['additional_data']['pagination']['next_start']);
+        }
+        
+        return $output;
     }
 
     /**
@@ -62,15 +111,31 @@ class Organizations
             throw new PipedriveMissingFieldError('You must include the "id" of the organization when getting deals');
         }
 
-        return $this->curl->get('organizations/' . $data['id'] . '/deals');
+        return $this->curl->get('organizations/' . $data['id'] . '/deals', $data);
+    }
+    
+    /**
+     * Lists persons associated with a organization.
+     *
+     * @param  array $data (id, start, limit)
+     * @return array persons
+     */
+    public function persons(array $data)
+    {
+        //if there is no name set throw error as it is a required field
+        if (!isset($data['id'])) {
+            throw new PipedriveMissingFieldError('You must include the "id" of the organization when getting persons');
+        }
+
+        return $this->curl->get('organizations/' . $data['id'] . '/persons', $data);
     }
 
     /**
      * Updates an organization
      *
      * @param  int   $organizationId pipedrives organization Id
-     * @param  array $data     new detials of organization
-     * @return array returns detials of a organization
+     * @param  array $data     new details of organization
+     * @return array returns details of a organization
      */
     public function update($organizationId, array $data = array())
     {
@@ -80,14 +145,14 @@ class Organizations
     /**
      * Adds a organization
      *
-     * @param  array $data organizations detials
-     * @return array returns detials of a organization
+     * @param  array $data organizations details
+     * @return array returns details of a organization
      */
     public function add(array $data)
     {
         //if there is no name set throw error as it is a required field
         if (!isset($data['name'])) {
-            throw new PipedriveMissingFieldError('You must include a "name" feild when inserting a organization');
+            throw new PipedriveMissingFieldError('You must include a "name" field when inserting a organization');
         }
 
         return $this->curl->post('organizations', $data);

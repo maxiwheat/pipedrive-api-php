@@ -32,15 +32,15 @@ class Activities
     /**
      * Adds a activity
      *
-     * @param  array $data activity detials
-     * @return array returns detials of the activity
+     * @param  array $data activity details
+     * @return array returns details of the activity
      */
     public function add(array $data)
     {
 
         //if there is no subject or type set chuck error as both of the fields are required
         if (!isset($data['subject']) or !isset($data['type'])) {
-            throw new PipedriveMissingFieldError('You must include both a "subject" and "type" feild when inserting a note');
+            throw new PipedriveMissingFieldError('You must include both a "subject" and "type" field when inserting a note');
         }
 
         return $this->curl->post('activities', $data);
