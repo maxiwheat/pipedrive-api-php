@@ -36,7 +36,7 @@ class Organizations
      */
     public function getById($id)
     {
-        return $this->curl->get('organizations' . $id);
+        return $this->curl->get('organizations/' . $id);
     }
 
     /**
@@ -164,5 +164,15 @@ class Organizations
         }
 
         return $this->curl->post('organizations', $data);
+    }
+    
+    /**
+     * Delete an organization
+     *
+     * @param  int   $id pipedrive organizations id
+     */
+    public function delete($id)
+    {
+        return $this->curl->delete('organizations/' . $id);
     }
 }
