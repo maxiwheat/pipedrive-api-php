@@ -1,6 +1,7 @@
 <?php namespace Benhawker\Pipedrive\Library;
 
 use Benhawker\Pipedrive\Exceptions\PipedriveMissingFieldError;
+use Benhawker\Pipedrive\Exceptions\PipedriveException;
 
 /**
  * Pipedrive Persons Methods
@@ -81,10 +82,17 @@ class Persons
             
             while ($pagination['more_items_in_collection']) {
                 $response = $this->curl->get('persons', array_merge($data, array('start' => $pagination['next_start'], 'limit' => 500)));
+                
+                if ($response['success']) {
+                    throw new PipedriveException('One of the request did not succeed while retrieving all persons');
+                }
+                
                 $pagination = $response['additional_data']['pagination'];
             
                 $output['data'] = array_merge($output['data'], $response['data']);
             }
+        } else {
+            throw new PipedriveException('One of the request did not succeed while retrieving all persons');
         }
         
         $output['additional_data']['pagination']['limit'] = count($output['data']);
