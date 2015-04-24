@@ -90,7 +90,7 @@ class Organizations
                 
                 $pagination = $response['additional_data']['pagination'];
             
-                array_merge($output['data'], $response['data']);
+                $output['data'] = array_merge($output['data'], $response['data']);
             }
         } else {
             throw new PipedriveException('One of the request did not succeed while retrieving all organizations');
